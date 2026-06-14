@@ -26,17 +26,22 @@ jobs:
       - name: Build APK
         run: ./gradlew assembleRelease
 
+      - name: Locate APK
+        run: |
+          find app/build -name "*.apk" -type f
+          cp $(find app/build -name "*.apk" -type f | head -1) app/build/app-release.apk
+
       - name: Upload APK (Artifact)
         uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: app/build/outputs/apk/release/app-release.apk
+          path: app/build/app-release.apk
 
       - name: Create Release & Upload APK
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_id }}
           name: Build #${{ github.run_number }}
-          files: app/build/outputs/apk/release/app-release.apk
+          files: app/build/app-release.apk
           make_latest: true
           fail_on_unmatched_files: false
